@@ -16,7 +16,7 @@ export type AuthConfig = {
   loginUrl: string
   logoutUrl: string
   sessionUrl: string
-  transformSessionMetadata?: (raw: unknown) => void
+  transformSessionMetadata?: (raw: Record<string, unknown>) => Record<string, unknown>
   onSessionSuccess?: (session: SessionResponse) => void
 }
 
@@ -26,7 +26,7 @@ export const WristbandAuthStore = defineStore('wristbandAuth', () => {
   const isLoading = ref(true)
   const userId = ref('')
   const tenantId = ref('')
-  const metadata = ref<Record<string, unknown>>({})
+  const metadata = ref<Record<string, unknown>>({} as Record<string, unknown>)
 
   // Config (set these before calling fetchSession)
   const config = ref({
@@ -75,8 +75,8 @@ export const WristbandAuthStore = defineStore('wristbandAuth', () => {
 
       if (rawMetadata) {
         metadata.value = config.value.transformSessionMetadata
-          ? config.value.transformSessionMetadata(rawMetadata)
-          : rawMetadata
+          ? config.value.transformSessionMetadata(rawMetadata as Record<string, unknown>)
+          : (rawMetadata as Record<string, unknown>)
       }
 
       tenantId.value = tid || ''
