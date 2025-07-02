@@ -24,7 +24,7 @@ export enum AuthStatus {
  * Context interface providing authentication state and session data throughout the application.
  *
  * This context is provided by the WristbandAuthProvider and can be accessed using the
- * useWristbandAuth() and useWristbandSession() hooks.
+ * useWristbandStore() and useWristbandSession() hooks.
  *
  * @template TSessionMetadata - Type for custom session metadata, defaulting to unknown.
  */

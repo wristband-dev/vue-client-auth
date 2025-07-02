@@ -8,9 +8,9 @@ describe('Public API exports', () => {
     expect(typeof api.WristbandAuthStore).toBe('function')
   })
 
-  it('should export useWristbandAuth hook', () => {
-    expect(api.useWristbandAuth).toBeDefined()
-    expect(typeof api.useWristbandAuth).toBe('function')
+  it('should export useWristbandStore hook', () => {
+    expect(api.useWristbandStore).toBeDefined()
+    expect(typeof api.useWristbandStore).toBe('function')
   })
 
   it('should export useWristbandSession hook', () => {
@@ -36,7 +36,7 @@ describe('Public API exports', () => {
   it('should not export any unexpected members', () => {
     const expectedExports = [
       'WristbandAuthStore',
-      'useWristbandAuth',
+      'useWristbandStore',
       'useWristbandSession',
       'AuthStatus',
       'redirectToLogin',

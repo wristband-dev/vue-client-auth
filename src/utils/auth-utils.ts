@@ -1,5 +1,5 @@
-import { ApiError } from '@/types/api-client'
-import type { LoginRedirectConfig, LogoutRedirectConfig } from '@/types/auth-utils'
+import { ApiError } from '../types/api-client'
+import type { LoginRedirectConfig, LogoutRedirectConfig } from '../types/auth-utils'
 
 const reservedLoginQueryKeys = ['login_hint', 'return_url', 'tenant_domain', 'tenant_custom_domain']
 const reservedLogoutQueryKeys = ['tenant_domain', 'tenant_custom_domain']

@@ -1,5 +1,5 @@
-import { ApiError, type ApiResponse, type RequestOptions } from '@/types/api-client'
-import { getCsrfToken } from '@/utils/api-client-utils'
+import { ApiError, type ApiResponse, type RequestOptions } from '../types/api-client'
+import { getCsrfToken } from '../utils/api-client-utils'
 
 /**
  * API client for authenticated REST API requests.

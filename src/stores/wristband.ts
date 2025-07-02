@@ -1,13 +1,24 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
-import { AuthStatus, type SessionResponse } from '@/types/auth-store'
+import { ref, computed, nextTick } from 'vue'
+import { AuthStatus, type SessionResponse } from '../types/auth-store'
 import apiClient from '../api/api-client'
 import {
   resolveAuthProviderLoginUrl,
   validateAuthProviderLogoutUrl,
   validateAuthProviderSessionUrl,
-} from '@/utils/auth-store-utils'
-import { isUnauthorizedError } from '@/utils/auth-utils'
+} from '../utils/auth-store-utils'
+import { isUnauthorizedError } from '../utils/auth-utils'
+
+export type AuthConfig = {
+  disableRedirectOnUnauthenticated?: boolean
+  csrfCookieName: string
+  csrfHeaderName: string
+  loginUrl: string
+  logoutUrl: string
+  sessionUrl: string
+  transformSessionMetadata?: (raw: unknown) => any
+  onSessionSuccess?: (session: SessionResponse) => void
+}
 
 export const WristbandAuthStore = defineStore('wristbandAuth', () => {
   // State
@@ -25,9 +36,9 @@ export const WristbandAuthStore = defineStore('wristbandAuth', () => {
     loginUrl: '',
     logoutUrl: '',
     sessionUrl: '',
-    transformSessionMetadata: undefined as ((raw: unknown) => any) | undefined,
-    onSessionSuccess: undefined as ((session: SessionResponse) => void) | undefined,
-  })
+    transformSessionMetadata: undefined,
+    onSessionSuccess: undefined,
+  } as AuthConfig)
 
   // Derived
   const authStatus = computed(() =>
@@ -72,7 +83,8 @@ export const WristbandAuthStore = defineStore('wristbandAuth', () => {
       userId.value = uid || ''
       isAuthenticated.value = true
       isLoading.value = false
-    } catch (error: any) {
+      await nextTick()
+    } catch (error: unknown) {
       console.log(error)
       if (config.value.disableRedirectOnUnauthenticated) {
         isAuthenticated.value = false
@@ -95,9 +107,9 @@ export const WristbandAuthStore = defineStore('wristbandAuth', () => {
     // Derived
     authStatus,
     // Actions
+    fetchSession,
     setConfig,
     updateMetadata,
-    fetchSession,
     // Config
     config,
   }
