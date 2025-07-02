@@ -20,10 +20,10 @@ describe('useWristbandStore', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    ;(WristbandAuthStore as unknown as vi.Mock).mockReturnValue({
+    ;(WristbandAuthStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
       setConfig: mockSetConfig,
     })
-    ;(storeToRefs as unknown as vi.Mock).mockReturnValue(mockRefs)
+    ;(storeToRefs as unknown as ReturnType<typeof vi.fn>).mockReturnValue(mockRefs)
   })
 
   it('returns reactive refs from the store', () => {
@@ -35,7 +35,7 @@ describe('useWristbandStore', () => {
 
   it('calls setConfig if config is provided', () => {
     const config = { some: 'config' }
-    useWristbandStore(config as any)
+    useWristbandStore(config as never)
     expect(mockSetConfig).toHaveBeenCalledWith(config)
   })
 

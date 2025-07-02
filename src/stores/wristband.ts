@@ -16,7 +16,7 @@ export type AuthConfig = {
   loginUrl: string
   logoutUrl: string
   sessionUrl: string
-  transformSessionMetadata?: (raw: unknown) => any
+  transformSessionMetadata?: (raw: unknown) => void
   onSessionSuccess?: (session: SessionResponse) => void
 }
 
@@ -57,7 +57,7 @@ export const WristbandAuthStore = defineStore('wristbandAuth', () => {
     validateAuthProviderSessionUrl(config.value.sessionUrl)
   }
 
-  function updateMetadata(newMetadata: Record<string, any>) {
+  function updateMetadata(newMetadata: Record<string, unknown>) {
     metadata.value = { ...metadata.value, ...newMetadata }
   }
 
