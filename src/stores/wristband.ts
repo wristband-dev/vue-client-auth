@@ -11,7 +11,7 @@ import {
   validateAuthProviderTokenUrl,
 } from '../utils/auth-store-utils'
 import { isUnauthorizedError } from '../utils/auth-utils'
-import { WristbandTokenError } from 'error'
+import { WristbandTokenError } from '../error'
 
 const TOKEN_EXPIRATION_BUFFER_TIME_MS = 30000
 const MAX_API_ATTEMPTS = 3

@@ -1,4 +1,4 @@
-import { ApiError } from 'error'
+import { ApiError } from '../error'
 
 /**
  * Resolves and properly formats a login URL for the Wristband Auth Provider.
