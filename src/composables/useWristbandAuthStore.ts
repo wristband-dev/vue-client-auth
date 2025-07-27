@@ -1,5 +1,6 @@
 import { storeToRefs } from 'pinia'
-import { AuthConfig, WristbandAuthStore } from '../stores/wristband'
+import { WristbandAuthStore } from '../stores/wristband'
+import { type AuthConfig } from 'types/auth-store'
 
 /**
  * Composable function to access and configure the Wristband authentication store.
