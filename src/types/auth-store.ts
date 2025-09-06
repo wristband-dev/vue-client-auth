@@ -34,7 +34,6 @@ export type AuthConfig = {
   csrfCookieName: string
   csrfHeaderName: string
   loginUrl: string
-  logoutUrl: string
   sessionUrl: string
   tokenUrl?: string
   transformSessionMetadata?: (raw: Record<string, unknown>) => Record<string, unknown>
@@ -172,12 +171,6 @@ export interface IWristbandAuthProviderProps<TSessionMetadata = unknown> {
    * @required
    */
   loginUrl: string
-  /**
-   * This URL should point to your backend server's Logout Endpoint that handles terminating the user's session in your
-   * application session as well as redirecting to Wristband's Logout Endpoint.
-   * @required
-   */
-  logoutUrl: string
   /**
    * Callback that executes after a successful session response but before authentication state updates.
    *

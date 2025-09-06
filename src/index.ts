@@ -11,7 +11,7 @@ export { AuthStatus, type SessionResponse } from './types/auth-store'
 export type { LoginRedirectConfig, LogoutRedirectConfig } from './types/auth-utils'
 
 // Export errors
-export { WristbandTokenError } from './error'
+export { WristbandError } from './error'
 
 // Export utils
 export { redirectToLogin, redirectToLogout } from './utils/auth-utils'

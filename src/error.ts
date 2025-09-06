@@ -1,3 +1,4 @@
+import type { WristbandErrorCode } from './types/errors'
 /**
  * Custom error class for API-related errors with additional HTTP context. Extends the standard Error class with
  * properties that provide more information about the HTTP error that occurred.
@@ -44,7 +45,7 @@ export class ApiError extends Error {
  *   }
  * }
  */
-export class WristbandTokenError extends Error {
+export class WristbandError extends Error {
   /**
    * @param code - A specific error code indicating the failure reason:
    *   - `'UNAUTHENTICATED'`: The user is not authenticated and cannot request a token.
@@ -54,11 +55,11 @@ export class WristbandTokenError extends Error {
    * @param originalError - (Optional) The original error thrown during the token request, if available.
    */
   constructor(
-    public readonly code: 'UNAUTHENTICATED' | 'TOKEN_FETCH_FAILED' | 'TOKEN_URL_NOT_CONFIGURED',
+    public readonly code: WristbandErrorCode,
     message: string,
     public readonly originalError?: unknown,
   ) {
     super(message)
-    this.name = 'WristbandTokenError'
+    this.name = 'WristbandError'
   }
 }

@@ -99,35 +99,6 @@ describe('Auth Provider Utils', () => {
     })
   })
 
-  describe('validateAuthProviderLogoutUrl', () => {
-    it('should throw if logoutUrl is not provided', () => {
-      expect(() => validateAuthProviderLogoutUrl('')).toThrow(
-        'WristbandAuthProvider: [logoutUrl] is required',
-      )
-      expect(() => validateAuthProviderLogoutUrl(null as unknown as string)).toThrow(
-        'WristbandAuthProvider: [logoutUrl] is required',
-      )
-      expect(() => validateAuthProviderLogoutUrl(undefined as unknown as string)).toThrow(
-        'WristbandAuthProvider: [logoutUrl] is required',
-      )
-    })
-
-    it('should throw for invalid URLs', () => {
-      expect(() => validateAuthProviderLogoutUrl('http://')).toThrow(
-        'WristbandAuthProvider: [http://] is not a valid logoutUrl',
-      )
-      expect(() => validateAuthProviderLogoutUrl('//')).toThrow(
-        'WristbandAuthProvider: [//] is not a valid logoutUrl',
-      )
-    })
-
-    it('should not throw for valid URLs', () => {
-      expect(() => validateAuthProviderLogoutUrl('/api/auth/logout')).not.toThrow()
-      expect(() => validateAuthProviderLogoutUrl('https://auth.example.com/logout')).not.toThrow()
-      expect(() => validateAuthProviderLogoutUrl('/api/auth/logout?tenant=example')).not.toThrow()
-    })
-  })
-
   describe('validateAuthProviderSessionUrl', () => {
     it('should throw if sessionUrl is not provided', () => {
       expect(() => validateAuthProviderSessionUrl('')).toThrow(

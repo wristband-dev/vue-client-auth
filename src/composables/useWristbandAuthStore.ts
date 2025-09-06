@@ -7,22 +7,24 @@ import { type AuthConfig } from 'types/auth-store'
  *
  * @param config - Optional authentication configuration to initialize the store with.
  * @returns An object containing reactive references to authentication state:
+ * - `authStatus`: The current authentication status.
+ * - `authError`: Any authentication error encountered.
  * - `isAuthenticated`: Indicates if the user is authenticated.
  * - `isLoading`: Indicates if authentication status is being determined.
- * - `authStatus`: The current authentication status.
  */
 export function useWristbandStore(config?: AuthConfig) {
   const store = WristbandAuthStore()
   const { setConfig } = store
-  const { isAuthenticated, isLoading, authStatus } = storeToRefs(store)
+  const { authError, authStatus, isAuthenticated, isLoading } = storeToRefs(store)
 
   if (config) {
     setConfig(config)
   }
 
   return {
+    authError,
+    authStatus,
     isAuthenticated,
     isLoading,
-    authStatus,
   }
 }

@@ -40,7 +40,7 @@ describe('Public API exports', () => {
       'useWristbandSession',
       'useWristbandToken',
       'AuthStatus',
-      'WristbandTokenError',
+      'WristbandError',
       'redirectToLogin',
       'redirectToLogout',
     ]

@@ -1,4 +1,5 @@
-import { ApiError } from '../error'
+import { ApiError, WristbandError } from '../error'
+import { WristbandErrorCode } from '../types/errors'
 
 /**
  * Resolves and properly formats a login URL for the Wristband Auth Provider.
@@ -44,40 +45,6 @@ export function resolveAuthProviderLoginUrl(loginUrl: string): string {
   }
 
   return resolvedUrl.toString()
-}
-
-/**
- * Validates a logout URL for the Wristband Auth Provider.
- *
- * This function checks that the provided logout URL is properly formatted and can be resolved to a valid URL. It does
- * not modify the URL in any way but simply validates it.
- *
- * @param {string} logoutUrl - The logout URL to validate
- * @throws {TypeError} If loginUrl is undefined, null, empty, or not a valid URL.
- *
- * @example
- * // Basic validation
- * validateAuthProviderLogoutUrl('/api/auth/logout');
- * // No error thrown, URL is valid
- *
- * @example
- * // With an invalid URL
- * validateAuthProviderLogoutUrl('http://');
- * // Throws TypeError: "WristbandAuthProvider: [http://] is not a valid logoutUrl"
- */
-export function validateAuthProviderLogoutUrl(logoutUrl: string): void {
-  if (!logoutUrl || !logoutUrl.trim()) {
-    throw new TypeError('WristbandAuthProvider: [logoutUrl] is required')
-  }
-
-  // For frameworks like NextJS, need to ensure this doesn't break in server-side environments.
-  if (typeof window !== 'undefined') {
-    try {
-      new URL(logoutUrl, window.location.origin)
-    } catch {
-      throw new TypeError(`WristbandAuthProvider: [${logoutUrl}] is not a valid logoutUrl`)
-    }
-  }
 }
 
 /**

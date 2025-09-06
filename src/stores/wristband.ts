@@ -6,12 +6,12 @@ import {
   delay,
   is4xxError,
   resolveAuthProviderLoginUrl,
-  validateAuthProviderLogoutUrl,
   validateAuthProviderSessionUrl,
   validateAuthProviderTokenUrl,
 } from '../utils/auth-store-utils'
 import { isUnauthorizedError } from '../utils/auth-utils'
-import { WristbandTokenError } from '../error'
+import { WristbandError } from '../error'
+import { WristbandErrorCode } from '../types/errors'
 
 const TOKEN_EXPIRATION_BUFFER_TIME_MS = 30000
 const MAX_API_ATTEMPTS = 3
@@ -19,6 +19,7 @@ const API_RETRY_DELAY_MS = 100
 
 export const WristbandAuthStore = defineStore('wristbandAuth', () => {
   // State
+  const authError = ref<WristbandError | null>(null)
   const isAuthenticated = ref(false)
   const isLoading = ref(true)
   const userId = ref('')
@@ -35,7 +36,6 @@ export const WristbandAuthStore = defineStore('wristbandAuth', () => {
     csrfHeaderName: 'X-CSRF-TOKEN',
     disableRedirectOnUnauthenticated: false,
     loginUrl: '',
-    logoutUrl: '',
     sessionUrl: '',
     tokenUrl: '',
     transformSessionMetadata: undefined,
@@ -55,7 +55,6 @@ export const WristbandAuthStore = defineStore('wristbandAuth', () => {
   async function setConfig(newConfig: Partial<typeof config.value>) {
     config.value = { ...config.value, ...newConfig }
     config.value.loginUrl = resolveAuthProviderLoginUrl(config.value.loginUrl)
-    validateAuthProviderLogoutUrl(config.value.logoutUrl)
     validateAuthProviderSessionUrl(config.value.sessionUrl)
     if (config.value.tokenUrl && config.value.tokenUrl.length > 0) {
       validateAuthProviderTokenUrl(config.value.tokenUrl)
@@ -86,10 +85,10 @@ export const WristbandAuthStore = defineStore('wristbandAuth', () => {
   async function getToken(): Promise<string> {
     const validatedTokenUrl = config.value.tokenUrl
     if (!validatedTokenUrl || !validatedTokenUrl.trim()) {
-      throw new WristbandTokenError('TOKEN_URL_NOT_CONFIGURED', 'Token URL not configured')
+      throw new WristbandError(WristbandErrorCode.INVALID_TOKEN_URL, 'Token URL not configured')
     }
     if (!isAuthenticated.value) {
-      throw new WristbandTokenError('UNAUTHENTICATED', 'User is not authenticated')
+      throw new WristbandError(WristbandErrorCode.UNAUTHENTICATED, 'User is not authenticated')
     }
 
     // Check if we have a valid cached token (with 30 second buffer)
@@ -123,11 +122,19 @@ export const WristbandAuthStore = defineStore('wristbandAuth', () => {
             if (isUnauthorizedError(error)) {
               accessToken.value = ''
               accessTokenExpiresAt.value = 0
-              throw new WristbandTokenError('UNAUTHENTICATED', 'Token request unauthorized', error)
+              throw new WristbandError(
+                WristbandErrorCode.UNAUTHENTICATED,
+                'Token request unauthorized',
+                error,
+              )
             }
 
             if (is4xxError(error)) {
-              throw new WristbandTokenError('TOKEN_FETCH_FAILED', 'Failed to fetch token', error)
+              throw new WristbandError(
+                WristbandErrorCode.TOKEN_FETCH_FAILED,
+                'Failed to fetch token',
+                error,
+              )
             }
 
             if (attempt === MAX_API_ATTEMPTS) {
@@ -139,8 +146,8 @@ export const WristbandAuthStore = defineStore('wristbandAuth', () => {
         }
 
         // All attempts failed, throw the last error
-        throw new WristbandTokenError(
-          'TOKEN_FETCH_FAILED',
+        throw new WristbandError(
+          WristbandErrorCode.TOKEN_FETCH_FAILED,
           'Failed to fetch token after multiple attempts',
           lastError,
         )
@@ -156,10 +163,8 @@ export const WristbandAuthStore = defineStore('wristbandAuth', () => {
   }
 
   async function fetchSession() {
-    const resolvedLoginUrl = resolveAuthProviderLoginUrl(config.value.loginUrl)
-    const validatedLogoutUrl = config.value.logoutUrl
     const validatedSessionUrl = config.value.sessionUrl
-    let lastError: unknown
+    let lastError: WristbandError | null = null
 
     for (let attempt = 1; attempt <= MAX_API_ATTEMPTS; attempt++) {
       try {
@@ -186,26 +191,48 @@ export const WristbandAuthStore = defineStore('wristbandAuth', () => {
         tokenUrl.value = tUrl || ''
         await nextTick()
       } catch (error: unknown) {
-        lastError = error
-        if (is4xxError(error)) {
+        // Always bubble up invalid response errors (represents a dev configuration error)
+        if (error instanceof WristbandError) {
+          throw error
+        }
+
+        if (isUnauthorizedError(error)) {
+          lastError = new WristbandError(
+            WristbandErrorCode.UNAUTHENTICATED,
+            'User is not authenticated',
+            error,
+          )
           break
         }
 
+        // If it's a non-401 4xx error, bail early (don't retry client errors)
+        if (is4xxError(error)) {
+          lastError = new WristbandError(
+            WristbandErrorCode.SESSION_FETCH_FAILED,
+            'Failed to fetch session',
+            error,
+          )
+          break
+        }
+
+        // If this is the last attempt, don't delay
         if (attempt === MAX_API_ATTEMPTS) {
+          lastError = new WristbandError(
+            WristbandErrorCode.SESSION_FETCH_FAILED,
+            'Failed to fetch session',
+            error,
+          )
           break
         }
 
         await delay(API_RETRY_DELAY_MS)
       }
+    }
 
-      if (config.value.disableRedirectOnUnauthenticated) {
-        isAuthenticated.value = false
-        isLoading.value = false
-      } else {
-        window.location.href = isUnauthorizedError(lastError)
-          ? resolvedLoginUrl
-          : validatedLogoutUrl
-      }
+    if (config.value.disableRedirectOnUnauthenticated) {
+      authError.value = lastError
+      isAuthenticated.value = false
+      isLoading.value = false
     }
   }
 
@@ -219,6 +246,7 @@ export const WristbandAuthStore = defineStore('wristbandAuth', () => {
     tokenUrl,
     // Derived
     authStatus,
+    authError,
     // Actions
     clearAuthData,
     clearToken,
