@@ -1,6 +1,6 @@
 import { WristbandError } from '../error'
 import { WristbandAuthStore } from '../stores/wristband'
-import { type AuthConfig } from 'types/auth-store'
+import { type AuthConfig } from '../types/auth-store'
 import { WristbandErrorCode } from '../types/errors'
 
 export function useWristbandToken(): Pick<AuthConfig, 'getToken' | 'clearToken'> {
