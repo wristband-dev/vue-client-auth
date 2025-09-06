@@ -1,10 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-
-import {
-  resolveAuthProviderLoginUrl,
-  validateAuthProviderLogoutUrl,
-  validateAuthProviderSessionUrl,
-} from './auth-store-utils'
+import { resolveAuthProviderLoginUrl, validateAuthProviderSessionUrl } from './auth-store-utils'
 
 describe('Auth Provider Utils', () => {
   // Store the original window.location

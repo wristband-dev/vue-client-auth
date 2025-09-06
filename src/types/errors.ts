@@ -2,6 +2,8 @@
  * Error codes for failures in the Wristband SDK.
  */
 export enum WristbandErrorCode {
+  /** An unknown error occurred. */
+  INVALID_ARGUMENT = 'INVALID_ARGUMENT',
   /** An invalid login URL value was provided to the SDK. */
   INVALID_LOGIN_URL = 'INVALID_LOGIN_URL',
   /** An invalid logout URL value was provided to the SDK (primarily for `redirectToLogout()`). */
